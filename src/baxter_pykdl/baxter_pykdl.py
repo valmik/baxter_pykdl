@@ -174,7 +174,8 @@ class baxter_kinematics(object):
     def coriolis(self):
         coriolis = PyKDL.JntArray(self._num_jnts)
         self._dyn_kdl.JntToCoriolis(self.joints_to_kdl('positions'), self.joints_to_kdl('velocities'), coriolis)
-        return self.kdl_to_mat(coriolis)
+        return np.array(coriolis).reshape((-1, 1))
+        # return self.kdl_to_mat(coriolis)
 
     # def cart_coriolis(self):
     #     js_coriolis = self.coriolis()
@@ -184,5 +185,6 @@ class baxter_kinematics(object):
     def gravity(self):
         gravity = PyKDL.JntArray(self._num_jnts)
         self._dyn_kdl.JntToGravity(self.joints_to_kdl('positions'), gravity)
-        return self.kdl_to_mat(gravity)
+        # return self.kdl_to_mat(gravity)
+        return np.array(gravity).reshape((-1, 1))
 
