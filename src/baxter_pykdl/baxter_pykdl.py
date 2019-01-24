@@ -170,3 +170,19 @@ class baxter_kinematics(object):
         js_inertia = self.inertia()
         jacobian = self.jacobian()
         return np.linalg.inv(jacobian * np.linalg.inv(js_inertia) * jacobian.T)
+
+    def coriolis(self):
+        coriolis = PyKDL.JntArray(self._num_jnts)
+        self._dyn_kdl.JntToCoriolis(self.joints_to_kdl('positions'), self.joints_to_kdl('velocities'), coriolis)
+        return self.kdl_to_mat(coriolis)
+
+    # def cart_coriolis(self):
+    #     js_coriolis = self.coriolis()
+    #     jacobian = self.jacobian()
+    #     return np.linalg.inv(jacobian * )
+
+    def gravity(self)
+        gravity = PyKDL.JntArray(self._num_jnts)
+        self._dyn_kdl.JntToGravity(self.joints_to_kdl('positions'), gravity)
+        return self.kdl_to_mat(gravity)
+

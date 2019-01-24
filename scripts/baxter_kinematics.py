@@ -69,6 +69,18 @@ def main():
     # Cartesian space mass matrix
     print '\n*** Baxter Cartesian Inertia ***\n'
     print kin.cart_inertia()
+    # Joint space coriolis matrix
+    print '\n*** Baxter Joint Coriolis ***\n'
+    print kin.coriolis()
+    # Cartesian space coriolis matrix
+    # print '\n*** Baxter Cartesian Coriolis ***\n'
+    # print kin.cart_coriolis()
+    # Joint space gravity matrix
+    print '\n*** Baxter Joint Gravity ***\n'
+    print kin.gravity()
+    # Cartesian space gravity matrix
+    # print '\n*** Baxter Cartesian Gravity ***\n'
+    # print kin.cart_gravity()
 
 if __name__ == "__main__":
     main()
