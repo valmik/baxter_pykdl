@@ -86,13 +86,13 @@ class baxter_kinematics(object):
 
         if type == 'positions':
             cur_type_values = self._limb_interface.joint_angles()
-        elif type == 'velocities':
+        elif type == 'velocities' or type == 'velocities2':
             cur_type_values = self._limb_interface.joint_velocities()
         elif type == 'torques':
             cur_type_values = self._limb_interface.joint_efforts()
         for idx, name in enumerate(self._joint_names):
             kdl_array[idx] = cur_type_values[name]
-        if type == 'velocities':
+        if type == 'velocities2':
             kdl_array = PyKDL.JntArrayVel(kdl_array)
         return kdl_array
 
@@ -115,7 +115,7 @@ class baxter_kinematics(object):
 
     def forward_velocity_kinematics(self):
         end_frame = PyKDL.FrameVel()
-        self._fk_v_kdl.JntToCart(self.joints_to_kdl('velocities'),
+        self._fk_v_kdl.JntToCart(self.joints_to_kdl('velocities2'),
                                  end_frame)
         return end_frame.GetTwist()
 
@@ -181,7 +181,7 @@ class baxter_kinematics(object):
     #     jacobian = self.jacobian()
     #     return np.linalg.inv(jacobian * )
 
-    def gravity(self)
+    def gravity(self):
         gravity = PyKDL.JntArray(self._num_jnts)
         self._dyn_kdl.JntToGravity(self.joints_to_kdl('positions'), gravity)
         return self.kdl_to_mat(gravity)
