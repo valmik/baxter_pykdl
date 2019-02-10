@@ -81,19 +81,24 @@ class baxter_kinematics(object):
         for idx in xrange(self._arm_chain.getNrOfSegments()):
             print '* ' + self._arm_chain.getSegment(idx).getName()
 
-    def joints_to_kdl(self, type):
+    def joints_to_kdl(self, type, values=None):
         kdl_array = PyKDL.JntArray(self._num_jnts)
 
-        if type == 'positions':
-            cur_type_values = self._limb_interface.joint_angles()
-        elif type == 'velocities' or type == 'velocities2':
-            cur_type_values = self._limb_interface.joint_velocities()
-        elif type == 'torques':
-            cur_type_values = self._limb_interface.joint_efforts()
+        if values is None:
+            if type == 'positions':
+                cur_type_values = self._limb_interface.joint_angles()
+            elif type == 'velocities' or type == 'velocities2':
+                cur_type_values = self._limb_interface.joint_velocities()
+            elif type == 'torques':
+                cur_type_values = self._limb_interface.joint_efforts()
+        else:
+            cur_type_values = values
+
         for idx, name in enumerate(self._joint_names):
             kdl_array[idx] = cur_type_values[name]
         if type == 'velocities2':
             kdl_array = PyKDL.JntArrayVel(kdl_array)
+
         return kdl_array
 
     def kdl_to_mat(self, data):
@@ -103,9 +108,9 @@ class baxter_kinematics(object):
                 mat[i,j] = data[i,j]
         return mat
 
-    def forward_position_kinematics(self):
+    def forward_position_kinematics(self, joint_values=None):
         end_frame = PyKDL.Frame()
-        self._fk_p_kdl.JntToCart(self.joints_to_kdl('positions'),
+        self._fk_p_kdl.JntToCart(self.joints_to_kdl('positions', joint_values),
                                  end_frame)
         pos = end_frame.p
         rot = PyKDL.Rotation(end_frame.M)
@@ -113,9 +118,9 @@ class baxter_kinematics(object):
         return np.array([pos[0], pos[1], pos[2],
                          rot[0], rot[1], rot[2], rot[3]])
 
-    def forward_velocity_kinematics(self):
+    def forward_velocity_kinematics(self, joint_velocities=None):
         end_frame = PyKDL.FrameVel()
-        self._fk_v_kdl.JntToCart(self.joints_to_kdl('velocities2'),
+        self._fk_v_kdl.JntToCart(self.joints_to_kdl('velocities2', joint_velocities),
                                  end_frame)
         return end_frame.GetTwist()
 
@@ -143,37 +148,37 @@ class baxter_kinematics(object):
         result_angles = PyKDL.JntArray(self._num_jnts)
 
         if self._ik_p_kdl.CartToJnt(seed_array, goal_pose, result_angles) >= 0:
-            result = np.array(result_angles)
+            result = np.array(list(result_angles))
             return result
         else:
             print 'No IK Solution Found'
             return None
 
-    def jacobian(self):
+    def jacobian(self, joint_values=None):
         jacobian = PyKDL.Jacobian(self._num_jnts)
-        self._jac_kdl.JntToJac(self.joints_to_kdl('positions'), jacobian)
+        self._jac_kdl.JntToJac(self.joints_to_kdl('positions', joint_values), jacobian)
         return self.kdl_to_mat(jacobian)
 
-    def jacobian_transpose(self):
-        return self.jacobian().T
+    def jacobian_transpose(self, joint_values=None):
+        return self.jacobian(joint_values).T
 
-    def jacobian_pseudo_inverse(self):
-        return np.linalg.pinv(self.jacobian())
+    def jacobian_pseudo_inverse(self, joint_values=None):
+        return np.linalg.pinv(self.jacobian(joint_values))
 
 
-    def inertia(self):
+    def inertia(self, joint_values=None):
         inertia = PyKDL.JntSpaceInertiaMatrix(self._num_jnts)
-        self._dyn_kdl.JntToMass(self.joints_to_kdl('positions'), inertia)
+        self._dyn_kdl.JntToMass(self.joints_to_kdl('positions', joint_values), inertia)
         return self.kdl_to_mat(inertia)
 
-    def cart_inertia(self):
-        js_inertia = self.inertia()
-        jacobian = self.jacobian()
+    def cart_inertia(self, joint_values=None):
+        js_inertia = self.inertia(joint_values)
+        jacobian = self.jacobian(joint_values)
         return np.linalg.inv(jacobian * np.linalg.inv(js_inertia) * jacobian.T)
 
-    def coriolis(self):
+    def coriolis(self, joint_values=None, joint_velocities=None):
         coriolis = PyKDL.JntArray(self._num_jnts)
-        self._dyn_kdl.JntToCoriolis(self.joints_to_kdl('positions'), self.joints_to_kdl('velocities'), coriolis)
+        self._dyn_kdl.JntToCoriolis(self.joints_to_kdl('positions', joint_values), self.joints_to_kdl('velocities', joint_velocities), coriolis)
         return np.array(coriolis).reshape((-1, 1))
         # return self.kdl_to_mat(coriolis)
 
@@ -182,9 +187,9 @@ class baxter_kinematics(object):
     #     jacobian = self.jacobian()
     #     return np.linalg.inv(jacobian * )
 
-    def gravity(self):
+    def gravity(self, joint_values=None):
         gravity = PyKDL.JntArray(self._num_jnts)
-        self._dyn_kdl.JntToGravity(self.joints_to_kdl('positions'), gravity)
+        self._dyn_kdl.JntToGravity(self.joints_to_kdl('positions', joint_values), gravity)
         # return self.kdl_to_mat(gravity)
         return np.array(gravity).reshape((-1, 1))
 
