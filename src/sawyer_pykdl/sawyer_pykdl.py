@@ -179,17 +179,12 @@ class sawyer_kinematics(object):
     def coriolis(self, joint_values=None, joint_velocities=None):
         coriolis = PyKDL.JntArray(self._num_jnts)
         self._dyn_kdl.JntToCoriolis(self.joints_to_kdl('positions', joint_values), self.joints_to_kdl('velocities', joint_velocities), coriolis)
+        coriolis = [x for x in coriolis]
         return np.array(coriolis).reshape((-1, 1))
-        # return self.kdl_to_mat(coriolis)
-
-    # def cart_coriolis(self):
-    #     js_coriolis = self.coriolis()
-    #     jacobian = self.jacobian()
-    #     return np.linalg.inv(jacobian * )
 
     def gravity(self, joint_values=None):
         gravity = PyKDL.JntArray(self._num_jnts)
         self._dyn_kdl.JntToGravity(self.joints_to_kdl('positions', joint_values), gravity)
-        # return self.kdl_to_mat(gravity)
+        gravity = [x for x in gravity]
         return np.array(gravity).reshape((-1, 1))
 
