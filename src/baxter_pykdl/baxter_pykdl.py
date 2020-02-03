@@ -64,7 +64,7 @@ class baxter_kinematics(object):
                                                    self._ik_v_kdl)
         self._jac_kdl = PyKDL.ChainJntToJacSolver(self._arm_chain)
         self._dyn_kdl = PyKDL.ChainDynParam(self._arm_chain,
-                                            PyKDL.Vector(0.0,0.0,-9.81))
+                                            PyKDL.Vector(0.0, 0.0, -9.81))
 
     def print_robot_description(self):
         nf_joints = 0
@@ -179,6 +179,8 @@ class baxter_kinematics(object):
     def coriolis(self, joint_values=None, joint_velocities=None):
         coriolis = PyKDL.JntArray(self._num_jnts)
         self._dyn_kdl.JntToCoriolis(self.joints_to_kdl('positions', joint_values), self.joints_to_kdl('velocities', joint_velocities), coriolis)
+        # return np.array(coriolis).reshape((-1, 1))
+        coriolis = [x for x in coriolis]
         return np.array(coriolis).reshape((-1, 1))
         # return self.kdl_to_mat(coriolis)
 
@@ -190,6 +192,6 @@ class baxter_kinematics(object):
     def gravity(self, joint_values=None):
         gravity = PyKDL.JntArray(self._num_jnts)
         self._dyn_kdl.JntToGravity(self.joints_to_kdl('positions', joint_values), gravity)
-        # return self.kdl_to_mat(gravity)
+        gravity = [x for x in gravity]
         return np.array(gravity).reshape((-1, 1))
 
