@@ -10,6 +10,8 @@ find_package(catkin
   tf
   baxter_core_msgs
   baxter_interface
+  intera_core_msgs
+  intera_interface
 )
 
 catkin_python_setup()
@@ -23,6 +25,8 @@ catkin_package(
   tf
   baxter_interface
   baxter_core_msgs
+  intera_core_msgs
+  intera_interface
   DEPENDS
   python_orocos_kdl
   urdfdom
