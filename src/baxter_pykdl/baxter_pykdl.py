@@ -64,7 +64,7 @@ class baxter_kinematics(object):
                                                    self._ik_v_kdl)
         self._jac_kdl = PyKDL.ChainJntToJacSolver(self._arm_chain)
         self._dyn_kdl = PyKDL.ChainDynParam(self._arm_chain,
-                                            PyKDL.Vector.Zero())
+                                            PyKDL.Vector(0.0,0.0,-9.81))
 
     def print_robot_description(self):
         nf_joints = 0

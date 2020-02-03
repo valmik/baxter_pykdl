@@ -114,7 +114,7 @@ class KDLKinematics(object):
         self._ik_v_kdl = kdl.ChainIkSolverVel_pinv(self.chain)
         self._ik_p_kdl = kdl.ChainIkSolverPos_NR(self.chain, self._fk_kdl, self._ik_v_kdl)
         self._jac_kdl = kdl.ChainJntToJacSolver(self.chain)
-        self._dyn_kdl = kdl.ChainDynParam(self.chain, kdl.Vector.Zero())
+        self._dyn_kdl = kdl.ChainDynParam(self.chain, kdl.Vector(0.0, 0.0, -9.81))
 
     ##
     # @return List of link names in the kinematic chain.
