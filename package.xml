@@ -24,6 +24,8 @@
   <build_depend>rospy</build_depend>
   <build_depend>baxter_core_msgs</build_depend>
   <build_depend>baxter_interface</build_depend>
+  <build_depend>intera_core_msgs</build_depend>
+  <build_depend>intera_interface</build_depend>
   <build_depend>geometry_msgs</build_depend>
   <build_depend>sensor_msgs</build_depend>
   <build_depend>liburdfdom-dev</build_depend>
@@ -33,6 +35,8 @@
   <run_depend>rospy</run_depend>
   <run_depend>baxter_core_msgs</run_depend>
   <run_depend>baxter_interface</run_depend>
+  <run_depend>intera_core_msgs</run_depend>
+  <run_depend>intera_interface</run_depend>
   <run_depend>geometry_msgs</run_depend>
   <run_depend>sensor_msgs</run_depend>
   <run_depend>urdfdom</run_depend>
